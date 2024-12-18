@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Gerador de Placa Personalizada</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f4f4;
+        }
+        .custom-shadow {
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white p-8 rounded-lg w-full max-w-md custom-shadow">
+        <h1 class="text-2xl font-bold mb-6 text-center text-gray-800">Gerador de Placa Personalizada</h1>
+        
+        <div class="mb-4">
+            <label class="block text-gray-700 mb-2">Orientação da Placa:</label>
+            <select id="orientacao" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="pe">Em Pé</option>
+                <option value="deitada">Deitada</option>
+            </select>
+        </div>
+
+        <div class="mb-4">
+            <input type="text" id="texto-cima" placeholder="Texto da Parte de Cima" 
+                   class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2">
+            <input type="text" id="texto-baixo" placeholder="Texto da Parte de Baixo" 
+                   class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div class="flex space-x-2 mb-4">
+            <button onclick="gerarPlaca()" 
+                    class="flex-1 bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition">
+                Gerar Placa
+            </button>
+            <button onclick="baixarImagem()" id="botao-download" 
+                    class="flex-1 bg-green-500 text-white p-2 rounded hover:bg-green-600 transition" style="display:none;">
+                Baixar Imagem
+            </button>
+        </div>
+
+        <div class="flex justify-center">
+            <canvas id="canvas" class="max-w-full border rounded" style="max-width: 400px;"></canvas>
+        </div>
+    </div>
+
+    <script>
+        function wrapText(context, text, x, y, maxWidth, lineHeight, fontSize) {
+            const words = text.split(' ');
+            let line = '';
+            const lines = [];
+
+            for(let n = 0; n < words.length; n++) {
+                const testLine = line + words[n] + ' ';
+                const metrics = context.measureText(testLine);
+                if (metrics.width > maxWidth && n > 0) {
+                    lines.push(line.trim());
+                    line = words[n] + ' ';
+                } else {
+                    line = testLine;
+                }
+            }
+            lines.push(line.trim());
+
+            return lines;
+        }
+
+        function gerarPlaca() {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            const orientacao = document.getElementById('orientacao').value;
+            const textoCima = document.getElementById('texto-cima').value;
+            const textoBaixo = document.getElementById('texto-baixo').value;
+
+            // Limpa o canvas anterior
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (orientacao === 'pe') {
+                canvas.width = 2480;
+                canvas.height = 3508;
+
+                // Retângulo vermelho no topo
+                ctx.fillStyle = 'red';
+                ctx.fillRect(0, 0, 2480, 852);
+
+                // Texto no topo
+                ctx.font = 'bold 200px Arial';
+                ctx.fillStyle = 'white';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                // Quebra de texto para cima
+                const linhasCima = wrapText(ctx, textoCima, canvas.width / 2, 426, 2000, 250, 200);
+                linhasCima.forEach((linha, index) => {
+                    ctx.fillText(linha, canvas.width / 2, 426 - (linhasCima.length - 1 - index) * 250);
+                });
+
+                // Texto na parte de baixo (preto)
+                ctx.font = 'bold 250px Arial';
+                ctx.fillStyle = 'black';
+                
+                // Quebra de texto para baixo
+                const linhasBaixo = wrapText(ctx, textoBaixo, canvas.width / 2, canvas.height - 1700, 2000, 300, 250);
+                linhasBaixo.forEach((linha, index) => {
+                    ctx.fillText(linha, canvas.width / 2, canvas.height - 1700 + index * 300);
+                });
+            } else {
+                canvas.width = 3508;
+                canvas.height = 2480;
+
+                // Retângulo vermelho no topo
+                ctx.fillStyle = 'red';
+                ctx.fillRect(0, 0, 3508, 820);
+
+                // Texto no topo
+                ctx.font = 'bold 200px Arial';
+                ctx.fillStyle = 'white';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                // Quebra de texto para cima
+                const linhasCima = wrapText(ctx, textoCima, canvas.width / 2, 410, 3000, 250, 200);
+                linhasCima.forEach((linha, index) => {
+                    ctx.fillText(linha, canvas.width / 2, 410 - (linhasCima.length - 1 - index) * 250);
+                });
+
+                // Texto na parte de baixo (preto)
+                ctx.font = 'bold 250px Arial';
+                ctx.fillStyle = 'black';
+                
+                // Quebra de texto para baixo
+                const linhasBaixo = wrapText(ctx, textoBaixo, canvas.width / 2, canvas.height - 1450, 3000, 300, 250);
+                linhasBaixo.forEach((linha, index) => {
+                    ctx.fillText(linha, canvas.width / 2, canvas.height - 1450 + index * 300);
+                });
+            }
+
+            // Mostra o botão de download
+            document.getElementById('botao-download').style.display = 'block';
+        }
+
+        function baixarImagem() {
+            const canvas = document.getElementById('canvas');
+            const link = document.createElement('a');
+            link.download = 'placa_personalizada.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+    </script>
+</body>
+</html>
