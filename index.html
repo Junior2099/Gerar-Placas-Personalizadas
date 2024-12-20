@@ -77,34 +77,34 @@
             const textoCima = document.getElementById('texto-cima').value;
             const textoBaixo = document.getElementById('texto-baixo').value;
 
-            // Limpa o canvas anterior
+           
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             if (orientacao === 'pe') {
                 canvas.width = 2480;
                 canvas.height = 3508;
 
-                // Retângulo vermelho no topo
+                
                 ctx.fillStyle = 'red';
                 ctx.fillRect(0, 0, 2480, 852);
 
-                // Texto no topo
+            
                 ctx.font = 'bold 200px Arial';
                 ctx.fillStyle = 'white';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 
-                // Quebra de texto para cima
+             
                 const linhasCima = wrapText(ctx, textoCima, canvas.width / 2, 426, 2000, 250, 200);
                 linhasCima.forEach((linha, index) => {
                     ctx.fillText(linha, canvas.width / 2, 426 - (linhasCima.length - 1 - index) * 250);
                 });
 
-                // Texto na parte de baixo (preto)
+               
                 ctx.font = 'bold 250px Arial';
                 ctx.fillStyle = 'black';
                 
-                // Quebra de texto para baixo
+              
                 const linhasBaixo = wrapText(ctx, textoBaixo, canvas.width / 2, canvas.height - 1700, 2000, 300, 250);
                 linhasBaixo.forEach((linha, index) => {
                     ctx.fillText(linha, canvas.width / 2, canvas.height - 1700 + index * 300);
@@ -113,34 +113,34 @@
                 canvas.width = 3508;
                 canvas.height = 2480;
 
-                // Retângulo vermelho no topo
+       
                 ctx.fillStyle = 'red';
                 ctx.fillRect(0, 0, 3508, 820);
 
-                // Texto no topo
+ 
                 ctx.font = 'bold 200px Arial';
                 ctx.fillStyle = 'white';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 
-                // Quebra de texto para cima
+        
                 const linhasCima = wrapText(ctx, textoCima, canvas.width / 2, 410, 3000, 250, 200);
                 linhasCima.forEach((linha, index) => {
                     ctx.fillText(linha, canvas.width / 2, 410 - (linhasCima.length - 1 - index) * 250);
                 });
 
-                // Texto na parte de baixo (preto)
+         
                 ctx.font = 'bold 250px Arial';
                 ctx.fillStyle = 'black';
                 
-                // Quebra de texto para baixo
+         
                 const linhasBaixo = wrapText(ctx, textoBaixo, canvas.width / 2, canvas.height - 1450, 3000, 300, 250);
                 linhasBaixo.forEach((linha, index) => {
                     ctx.fillText(linha, canvas.width / 2, canvas.height - 1450 + index * 300);
                 });
             }
 
-            // Mostra o botão de download
+      
             document.getElementById('botao-download').style.display = 'block';
         }
 
