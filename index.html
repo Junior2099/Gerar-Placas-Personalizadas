@@ -2,62 +2,235 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador de Placa Personalizada</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="icon" type="image/png" sizes="32x32" href="https://img.icons8.com/?size=100&id=DMtzOOKSkTVM&format=png&color=000000">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
         body {
-            background-color: #f4f4f4;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
         }
-        .custom-shadow {
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        
+        .card {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5a6fd1 0%, #6a3d9a 100%);
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #3a9bed 0%, #00d9e6 100%);
+            transform: translateY(-2px);
+        }
+        
+        .input-field {
+            transition: all 0.3s ease;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .input-field:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+        
+        .canvas-container {
+            position: relative;
+            margin: 0 auto;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            background: white;
+        }
+        
+        .canvas-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8fafc;
+            color: #64748b;
+            font-style: italic;
+        }
+        
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
         }
     </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
-    <div class="bg-white p-8 rounded-lg w-full max-w-md custom-shadow">
-        <h1 class="text-2xl font-bold mb-6 text-center text-gray-800">Gerador de Placa Personalizada</h1>
+<body class="flex items-center justify-center p-4">
+    <div class="card bg-white w-full max-w-2xl">
+        <div class="p-6 sm:p-8">
+            <div class="flex items-center justify-between mb-6">
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">
+                    <i class="fas fa-id-card mr-2 text-blue-500"></i> Gerador de Placa
+                </h1>
+                <div class="tooltip">
+                    <i class="fas fa-info-circle text-gray-400 hover:text-gray-600 cursor-pointer"></i>
+                    <span class="tooltiptext text-sm">Digite os textos e clique em Gerar Placa. Depois pode baixar a imagem.</span>
+                </div>
+            </div>
+            
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Orientação da Placa:</label>
+                    <div class="flex space-x-4">
+                        <button id="btn-pe" class="flex-1 py-3 px-4 rounded-lg border-2 border-blue-500 bg-blue-50 text-blue-600 font-medium flex items-center justify-center">
+                            <i class="fas fa-arrows-alt-v mr-2"></i> Em Pé
+                        </button>
+                        <button id="btn-deitada" class="flex-1 py-3 px-4 rounded-lg border-2 border-gray-300 text-gray-600 font-medium flex items-center justify-center hover:border-blue-300">
+                            <i class="fas fa-arrows-alt-h mr-2"></i> Deitada
+                        </button>
+                    </div>
+                    <input type="hidden" id="orientacao" value="pe">
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Texto Superior:</label>
+                    <div class="relative">
+                        <input type="text" id="texto-cima" placeholder="Ex: FECHADO PARA BALANÇO" 
+                               class="input-field w-full p-4 rounded-lg focus:outline-none">
+                        <div class="absolute right-3 top-3 text-gray-400">
+                            <i class="fas fa-font"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Texto Inferior:</label>
+                    <div class="relative">
+                        <input type="text" id="texto-baixo" placeholder="Ex: VOLTAMOS EM 01/01" 
+                               class="input-field w-full p-4 rounded-lg focus:outline-none">
+                        <div class="absolute right-3 top-3 text-gray-400">
+                            <i class="fas fa-text-height"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex space-x-4">
+                    <button onclick="gerarPlaca()" 
+                            class="btn-primary flex-1 py-3 px-6 rounded-lg text-white font-medium flex items-center justify-center">
+                        <i class="fas fa-magic mr-2"></i> Gerar Placa
+                    </button>
+                    <button onclick="baixarImagem()" id="botao-download" 
+                            class="btn-secondary flex-1 py-3 px-6 rounded-lg text-white font-medium flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300">
+                        <i class="fas fa-download mr-2"></i> Baixar
+                    </button>
+                </div>
+            </div>
+        </div>
         
-        <div class="mb-4">
-            <label class="block text-gray-700 mb-2">Orientação da Placa:</label>
-            <select id="orientacao" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="pe">Em Pé</option>
-                <option value="deitada">Deitada</option>
-            </select>
-        </div>
-
-        <div class="mb-4">
-            <input type="text" id="texto-cima" placeholder="Texto da Parte de Cima" 
-                   class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2">
-            <input type="text" id="texto-baixo" placeholder="Texto da Parte de Baixo" 
-                   class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
-        </div>
-
-        <div class="flex space-x-2 mb-4">
-            <button onclick="gerarPlaca()" 
-                    class="flex-1 bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition">
-                Gerar Placa
-            </button>
-            <button onclick="baixarImagem()" id="botao-download" 
-                    class="flex-1 bg-green-500 text-white p-2 rounded hover:bg-green-600 transition" style="display:none;">
-                Baixar Imagem
-            </button>
-        </div>
-
-        <div class="flex justify-center">
-            <canvas id="canvas" class="max-w-full border rounded" style="max-width: 400px;"></canvas>
+        <div class="p-4 bg-gray-50 border-t">
+            <div class="canvas-container">
+                <canvas id="canvas" class="w-full max-w-full block mx-auto canvas-placeholder" style="display: none;"></canvas>
+                <div id="canvas-placeholder" class="canvas-placeholder w-full h-64 sm:h-80">
+                    <div class="text-center p-4">
+                        <i class="fas fa-image text-4xl mb-2 text-gray-300"></i>
+                        <p>Sua placa aparecerá aqui</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        function wrapText(context, text, x, y, maxWidth, lineHeight, fontSize) {
+     
+        document.getElementById('btn-pe').addEventListener('click', function() {
+            document.getElementById('orientacao').value = 'pe';
+            this.classList.add('border-blue-500', 'bg-blue-50', 'text-blue-600');
+            this.classList.remove('border-gray-300', 'text-gray-600');
+            document.getElementById('btn-deitada').classList.add('border-gray-300', 'text-gray-600');
+            document.getElementById('btn-deitada').classList.remove('border-blue-500', 'bg-blue-50', 'text-blue-600');
+        });
+        
+        document.getElementById('btn-deitada').addEventListener('click', function() {
+            document.getElementById('orientacao').value = 'deitada';
+            this.classList.add('border-blue-500', 'bg-blue-50', 'text-blue-600');
+            this.classList.remove('border-gray-300', 'text-gray-600');
+            document.getElementById('btn-pe').classList.add('border-gray-300', 'text-gray-600');
+            document.getElementById('btn-pe').classList.remove('border-blue-500', 'bg-blue-50', 'text-blue-600');
+        });
+
+        function calcularTamanhoFonte(ctx, texto, maxWidth, maxHeight, orientacao) {
+            let fontSize = orientacao === 'pe' ? 200 : 150;
+            let lineHeight = fontSize * 1.2;
+            let lines = [];
+            
+    
+            do {
+                ctx.font = `bold ${fontSize}px Arial`;
+                lines = wrapText(ctx, texto, maxWidth, lineHeight);
+                
+                const totalHeight = lines.length * lineHeight;
+                
+                if (totalHeight > maxHeight || lines.some(line => ctx.measureText(line).width > maxWidth)) {
+                    fontSize -= 5;
+                    lineHeight = fontSize * 1.2;
+                } else {
+                    break;
+                }
+                
+                if (fontSize < 20) break; 
+            } while (true);
+            
+            return { fontSize, lineHeight, lines };
+        }
+
+        function wrapText(ctx, text, maxWidth, lineHeight) {
             const words = text.split(' ');
             let line = '';
             const lines = [];
-
-            for(let n = 0; n < words.length; n++) {
+            
+            for (let n = 0; n < words.length; n++) {
                 const testLine = line + words[n] + ' ';
-                const metrics = context.measureText(testLine);
+                const metrics = ctx.measureText(testLine);
+                
                 if (metrics.width > maxWidth && n > 0) {
                     lines.push(line.trim());
                     line = words[n] + ' ';
@@ -65,91 +238,95 @@
                     line = testLine;
                 }
             }
+            
             lines.push(line.trim());
-
             return lines;
         }
 
         function gerarPlaca() {
             const canvas = document.getElementById('canvas');
             const ctx = canvas.getContext('2d');
+            const placeholder = document.getElementById('canvas-placeholder');
             
             const orientacao = document.getElementById('orientacao').value;
-            const textoCima = document.getElementById('texto-cima').value;
-            const textoBaixo = document.getElementById('texto-baixo').value;
-
-           
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+            const textoCima = document.getElementById('texto-cima').value.trim();
+            const textoBaixo = document.getElementById('texto-baixo').value.trim();
+            
+            if (!textoCima && !textoBaixo) {
+                alert('Por favor, insira pelo menos um texto (superior ou inferior)');
+                return;
+            }
+            
             if (orientacao === 'pe') {
                 canvas.width = 2480;
                 canvas.height = 3508;
-
-                
-                ctx.fillStyle = 'red';
-                ctx.fillRect(0, 0, 2480, 852);
-
-            
-                ctx.font = 'bold 200px Arial';
-                ctx.fillStyle = 'white';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                
-             
-                const linhasCima = wrapText(ctx, textoCima, canvas.width / 2, 426, 2000, 250, 200);
-                linhasCima.forEach((linha, index) => {
-                    ctx.fillText(linha, canvas.width / 2, 426 - (linhasCima.length - 1 - index) * 250);
-                });
-
-               
-                ctx.font = 'bold 250px Arial';
-                ctx.fillStyle = 'black';
-                
-              
-                const linhasBaixo = wrapText(ctx, textoBaixo, canvas.width / 2, canvas.height - 1700, 2000, 300, 250);
-                linhasBaixo.forEach((linha, index) => {
-                    ctx.fillText(linha, canvas.width / 2, canvas.height - 1700 + index * 300);
-                });
             } else {
                 canvas.width = 3508;
                 canvas.height = 2480;
-
-       
-                ctx.fillStyle = 'red';
-                ctx.fillRect(0, 0, 3508, 820);
-
- 
-                ctx.font = 'bold 200px Arial';
+            }
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = 'red';
+            const alturaTopo = orientacao === 'pe' ? 852 : 820;
+            ctx.fillRect(0, 0, canvas.width, alturaTopo);
+            
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            if (textoCima) {
+                const maxWidth = orientacao === 'pe' ? canvas.width * 0.85 : canvas.width * 0.9;
+                const maxHeight = alturaTopo * 0.8;
+                const centerX = canvas.width / 2;
+                const centerY = alturaTopo / 2;
+                
+                const { fontSize, lineHeight, lines } = calcularTamanhoFonte(ctx, textoCima, maxWidth, maxHeight, orientacao);
+                ctx.font = `bold ${fontSize}px Arial`;
                 ctx.fillStyle = 'white';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
                 
-        
-                const linhasCima = wrapText(ctx, textoCima, canvas.width / 2, 410, 3000, 250, 200);
-                linhasCima.forEach((linha, index) => {
-                    ctx.fillText(linha, canvas.width / 2, 410 - (linhasCima.length - 1 - index) * 250);
-                });
-
-         
-                ctx.font = 'bold 250px Arial';
-                ctx.fillStyle = 'black';
-                
-         
-                const linhasBaixo = wrapText(ctx, textoBaixo, canvas.width / 2, canvas.height - 1450, 3000, 300, 250);
-                linhasBaixo.forEach((linha, index) => {
-                    ctx.fillText(linha, canvas.width / 2, canvas.height - 1450 + index * 300);
+                lines.forEach((line, index) => {
+                    const y = centerY - ((lines.length - 1) * lineHeight / 2) + (index * lineHeight);
+                    ctx.fillText(line, centerX, y);
                 });
             }
-
-      
-            document.getElementById('botao-download').style.display = 'block';
+            
+            if (textoBaixo) {
+                const maxWidth = orientacao === 'pe' ? canvas.width * 0.85 : canvas.width * 0.9;
+                const maxHeight = (canvas.height - alturaTopo) * 0.8;
+                const centerX = canvas.width / 2;
+                const centerY = alturaTopo + (canvas.height - alturaTopo) / 2;
+                
+                const { fontSize, lineHeight, lines } = calcularTamanhoFonte(ctx, textoBaixo, maxWidth, maxHeight, orientacao);
+                ctx.font = `bold ${fontSize}px Arial`;
+                ctx.fillStyle = 'black';
+                
+                lines.forEach((line, index) => {
+                    const y = centerY - ((lines.length - 1) * lineHeight / 2) + (index * lineHeight);
+                    ctx.fillText(line, centerX, y);
+                });
+            }
+            
+            canvas.style.display = 'block';
+            placeholder.style.display = 'none';
+            
+            const downloadBtn = document.getElementById('botao-download');
+            downloadBtn.classList.remove('opacity-0', 'pointer-events-none');
+            downloadBtn.classList.add('opacity-100', 'pointer-events-auto');
+            
+            const container = canvas.parentElement;
+            const aspectRatio = canvas.width / canvas.height;
+            const maxDisplayWidth = container.clientWidth;
+            const displayHeight = Math.min(maxDisplayWidth / aspectRatio, 500);
+            
+            canvas.style.width = '100%';
+            canvas.style.height = `${displayHeight}px`;
         }
 
         function baixarImagem() {
             const canvas = document.getElementById('canvas');
             const link = document.createElement('a');
             link.download = 'placa_personalizada.png';
-            link.href = canvas.toDataURL();
+            link.href = canvas.toDataURL('image/png');
             link.click();
         }
     </script>
